@@ -48,7 +48,7 @@ push:
 push_latest:
 	$(info $(M) Linking latest to $(NAME):$(VERSION) and pushing tag latest )
 	docker tag $(NAME):$(VERSION) $(NAME):latest
-	docker push "${NAME}:${VERSION}"
+	docker push "${NAME}:latest"
 
 clean:
 	$(info $(M) Cleaning)
