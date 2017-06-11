@@ -1,0 +1,6 @@
+tests/*
+Gemfile
+Gemdile.lock
+Makefile
+packages.mk
+VERSION

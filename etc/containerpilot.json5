@@ -1,0 +1,115 @@
+{
+  consul: "{{ .CONSUL | default "localhost"}}:8500",
+  logging: {
+    level: "{{ .LOG_LEVEL | default "INFO"}}",
+    format: "default",
+    output: "stdout"
+  },
+  jobs: [
+    {
+      name: "prestart",
+      exec: "/usr/local/bin/preStart-script.sh",
+      restarts: "never"
+    },
+    {
+      name: "{{ .APP_NAME }}",
+      port: {{ .APP_PORT }},
+      exec: "{{ .APP_EXEC }}",
+      restarts: {{ .APP_RESTARTS | default 10 }},
+      when: {
+        source: "prestart",
+        once: "exitSuccess",
+      },
+      {{ if .APP_HEALTH_EXEC -}}
+      health: {
+        exec: "{{ .APP_HEALTH_EXEC }}",
+        interval: {{ .APP_HEALTH_INTERVAL | default 10 }},
+        ttl: {{ .APP_HEALTH_TTL | default 25 }},
+        timeout: {{ .APP_HEALTH_TIMEOUT | default 5 }},
+      },
+      {{ end -}}
+      {{ if .APP_TAGS -}}
+      tags: [ {{ range $i := .APP_TAGS | split "," }}"{{ $i }}", {{ end }} ]
+      {{ end -}}
+      {{ if .APP_INTERFACES -}}
+      interfaces: [ {{ range $i := .APP_INTERFACES | split "," }}"{{ $i }}", {{ end }} ]
+      {{ end -}}
+    },
+    {
+      name: "preStop",
+      when: {
+        source: "{{ .APP_NAME }}",
+        once: "stopping"
+      },
+      exec: "/usr/local/bin/preStop-script.sh",
+      restarts: "never",
+    },
+    {
+      name: "postStop",
+      when: {
+        source: "{{ .APP_NAME }}",
+        once: "stopped"
+      },
+      exec: "/usr/local/bin/postStop-script.sh",
+    },
+    {{ range $i := loop 0 30 -}}{{ if (env (printf "SERVICE_NAME_%d" $i)) }}
+    {{ $ServiceName := (env (printf "SERVICE_NAME_%d" $i)) -}}
+    {
+      name: "reload-{{ $ServiceName }}",
+      when: {
+        source: "watch.{{ $ServiceName }}",
+        each: "changed"
+      },
+      exec: "/usr/local/bin/changed-script.sh",
+      timeout: "10s"
+    },
+    {{- end }}{{- end }}
+    {
+      name: "consul-agent",
+      exec: [ "/sbin/resu", "consul:consul", "--", "/usr/local/bin/consul",
+                  "agent",
+                  "-disable-host-node-id",
+                  "-data-dir=/consul/data/",
+                  "-config-dir=/consul/config/",
+                  {{ if .CONSUL_ENCRYPT -}}
+                  "-encrypt={{ .CONSUL_ENCRYPT }}==",
+                  {{ end -}}
+                  "-datacenter={{ or .CONSUL_DATACENTER "dc1" }}",
+                  "-rejoin",
+                  "-retry-join", "{{ .CONSUL }}",
+                  "-retry-max", "10",
+                  "-retry-interval", "10s"],
+      restarts: "unlimited"
+    },
+    {
+       name: "haproxy",
+       exec: ["/usr/local/bin/haproxy-manage.sh", "start"],
+       restarts: "never"
+    },
+{{ if .HAPROXY_EXPORTER -}}
+    {
+       name: "haproxyExporter",
+       exec: [ "/sbin/resu", "haproxy:haproxy", "--", "/bin/haproxy_exporter", "-haproxy.scrape-uri=unix:/run/haproxy/admin.sock"],
+       restarts: "never",
+       when: {
+        source: "haproxy",
+        once: "exitSuccess",
+      },
+    },
+{{- end }}
+  ],
+  watches: [
+    {{ range $i := loop 0 30 -}}{{ if (env (printf "SERVICE_NAME_%d" $i)) -}}
+    {{ $ServiceName := (env (printf "SERVICE_NAME_%d" $i)) -}}
+    {{ $ServiceInterval := (env (printf "SERVICE_INTERVAL_%d" $i)) | default 10 -}}
+    {
+      name: "{{ $ServiceName }}",
+      interval: {{ $ServiceInterval }}
+    },
+    {{- end }}{{- end }}
+  ],
+  control: {
+    socket: "/var/run/containerpilot.socket"
+  },
+ "telemetry": {}
+}

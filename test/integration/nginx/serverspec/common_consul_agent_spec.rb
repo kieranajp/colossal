@@ -1,0 +1,1 @@
+../../common-tests/common_consul_agent_spec.rb
