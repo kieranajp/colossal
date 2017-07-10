@@ -85,6 +85,18 @@ You can add custom scripts that will be executed if they exists and are executab
 | LOG_LEVEL         |  No      | INFO    |             |
 
 
+
+## Running tests
+
+```
+# Build image
+make build
+# Run tests (and try to do clean up)
+make tests
+# Run tests (leave images in docker and don't do clean up)
+make tests-debug
+```
+
 ## TODO
 
 Add support for application config consul-template

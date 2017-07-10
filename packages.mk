@@ -3,8 +3,8 @@
 ## Defines version of resu, CONTAINER PILOT, CONSUL and CONSUL TEMPLATE
 
 # Releases at https://github.com/joyent/containerpilot/releases
-CONTAINERPILOT_VERSION  := 3.0.0
-CONTAINERPILOT_CHECKSUM := 6da4a4ab3dd92d8fd009cdb81a4d4002a90c8b7c
+CONTAINERPILOT_VERSION  := 3.2.0
+CONTAINERPILOT_CHECKSUM := cf38c116416254cb4be482d4230836f66cef3cc0
 
 # Releases at https://releases.hashicorp.com/consul
 CONSUL_VERSION  := 0.8.4
