@@ -36,7 +36,7 @@ ENV APP_RESTARTS      10
 # Our Application
 COPY app /
 # Add prestart hook (Run this script before running our application)
-COPY prestart.sh /hooks/prestart 
+COPY prestart.sh /hooks/prestart
 
 # First service dependency (watcher) Redis
 ENV SERVICE_NAME_1   "pilot-redis"
@@ -102,7 +102,7 @@ Components of a producer:
 * The application i.e. blog
 * Consul-agent (packaged with Colossal)
 
-In order to know whether a producer is healthy, The consul agent performs health checks, and if it fail the service is de-registered. The health check is a command that is executed every interval inside the container by consul-agent. The health check could be a simple curl `curl localhost:8080/` or better implement a custom health endpoint that will returns 200 if all  is okay. That part is up to you implement. 
+In order to know whether a producer is healthy, The consul agent performs health checks, and if it fail the service is de-registered. The health check is a command that is executed every interval inside the container by consul-agent. The health check could be a simple curl `curl localhost:8080/` or better implement a custom health endpoint that will returns 200 if all  is okay. That part is up to you implement.
 You can also write a script that does a simple basic health. it checks connection and get some data and asserts it.
   exits with a non-zero if something is wrong.
 ```
@@ -145,6 +145,7 @@ You can add custom scripts that will be executed if it exist and is executable w
 
 | Location          | Description |
 |-------------------|-------------|
+| /hooks/preContainerPilot | Runs before container Pilot starting |
 | /hooks/prestart   | Runs before app start |
 | /hooks/preChange  | Runs after watcher change and before HAproxy reload  |
 | /hooks/postChange | Runs after watcher change and after HAproxy reload  |
@@ -164,11 +165,12 @@ The group of variables that define application configuration.
 |APP_NAME           |  YES     | None    | Application name|
 |APP_EXEC           |  YES     | None    | Application execution command|
 |APP_PORT           |  YES     | None    | Application Port |
+|APP_INTERFACES_STATIC|  NO    | None    | Static IP used to advertise on Consul |
+|APP_INTERFACES     |  NO      | None    | Comma separated parameters [check container pilot doc](https://github.com/joyent/containerpilot/blob/master/docs/30-configuration/32-configuration-file.md#interfaces)|
 |APP_POLL           |  NO      | None    |             |
 |APP_TAGS           |  NO      | None    |             |
 |APP_RESTARTS       |  NO      | 10      | Number of times the process will be restarted if it exits. This field supports any non-negative numeric value (ex. 0 or 1) or the strings "unlimited" or "never"|
 |APP_HEALTH_EXEC    |  NO      | None    |             |
-|APP_INTERFACES     |  NO      | None    |             |
 |APP_HEALTH_TTL     |  NO      | 25      |             |
 |APP_HEALTH_INTERVAL|  NO      | 10      |             |
 |APP_HEALTH_TIMEOUT |  No      | 5       |             |

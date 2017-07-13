@@ -36,7 +36,7 @@ tests: check_build
 	$(info $(M) Running tests for $(NAME) $(VERSION) )
 	@./test/run_tests.sh tests
 
-tests-debug: check_build
+tests-debug: build
 	@docker tag $(NAME):$(VERSION) $(NAME):dev
 	$(info $(M) Running tests-debug for $(NAME) $(VERSION) )
 	@./test/run_tests.sh tests-debug

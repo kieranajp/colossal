@@ -13,6 +13,11 @@
     },
     {
       name: "{{ .APP_NAME }}",
+      {{ if .APP_INTERFACES -}}
+      interfaces: [ {{ range $i := .APP_INTERFACES | split "," }}"{{ $i }}", {{ end }} ],
+      {{ else -}}{{ if .APP_INTERFACES_STATIC -}}
+      interfaces: [ "static:{{ .APP_INTERFACES_STATIC }}" ],
+      {{ end -}}{{ end -}}
       port: {{ .APP_PORT }},
       exec: "{{ .APP_EXEC }}",
       restarts: {{ .APP_RESTARTS | default 10 }},
@@ -29,10 +34,7 @@
       },
       {{ end -}}
       {{ if .APP_TAGS -}}
-      tags: [ {{ range $i := .APP_TAGS | split "," }}"{{ $i }}", {{ end }} ]
-      {{ end -}}
-      {{ if .APP_INTERFACES -}}
-      interfaces: [ {{ range $i := .APP_INTERFACES | split "," }}"{{ $i }}", {{ end }} ]
+      tags: [ {{ range $i := .APP_TAGS | split "," }}"{{ $i }}", {{ end }} ],
       {{ end -}}
     },
     {

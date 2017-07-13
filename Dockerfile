@@ -65,5 +65,7 @@ COPY etc /etc
 COPY bin /usr/local/bin/
 COPY hooks /usr/local/bin/
 
+ADD cmd.sh /cmd.sh
+CMD [ "/cmd.sh"]
+#CMD [ "/bin/containerpilot", "-config", "/etc/containerpilot.json5"]
 
-CMD [ "/bin/containerpilot", "-config", "/etc/containerpilot.json5"]
