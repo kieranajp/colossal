@@ -10,7 +10,7 @@ global
     chroot        /var/lib/haproxy
 
 defaults
-    log        global
+    log        {{ or (env "HAPROXY_LOG") "global" }}
     option     dontlognull
     option     log-separate-errors
     option     dontlog-normal
