@@ -222,4 +222,8 @@ make tests-debug
 
 ## TODO
 
-Add support for application config consul-template
+* Add support for application config consul-template
+* CI
+* HAProxy
+** Enable default option for type of backedend TCP/HTTP
+

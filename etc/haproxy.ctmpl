@@ -13,6 +13,9 @@ defaults
     log        global
     option     dontlognull
     option     log-separate-errors
+    option     dontlog-normal
+    option     httplog
+
     option     redispatch
     # https://cbonte.github.io/haproxy-dconv/1.8/configuration.html#4-timeout%20check
     ## HTTP
