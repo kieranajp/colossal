@@ -13,7 +13,7 @@ while read -r line || [ -n "$line" ]; do
   # ignore comments
   case "${line}" in
       \#*)
-        echo "ignoreing comment" ;;
+        echo " * Setting up env (ignoring comment)" ;;
       *)
         echo " * Setting up env ${line}"
         containerpilot -config /etc/containerpilot.json5 -putenv "${line}"
