@@ -105,7 +105,7 @@ Components of a producer:
 In order to know whether a producer is healthy, The consul agent performs health checks, and if it fail the service is de-registered. The health check is a command that is executed every interval inside the container by consul-agent. The health check could be a simple curl `curl localhost:8080/` or better implement a custom health endpoint that will returns 200 if all  is okay. That part is up to you implement.
 You can also write a script that does a simple basic health. it checks connection and get some data and asserts it.
   exits with a non-zero if something is wrong.
-```
+```bash
 #!/bin/sh
 set -e
 pg_isready -h localhost -p 5433
@@ -127,7 +127,7 @@ Your application will connect to localhost:SERVICE_port and HAProxy will take ca
 
 ### Overview
 This approach to  Service Discovery has the benefit of being de-centralized, orchestrator agonistic, high level of visibility and flexibility.
-Doing debugging or maintenance on a backend is as simple as stopping the Consul-agent process on the instance. You can also utlize HAProxy status page it will list all the backends available and aggregate and per-request information.
+Doing debugging or maintenance on a backend is as simple as stopping the Consul-agent process on the instance. You can also utilize HAProxy status page it will list all the backends available and aggregate and per-request information.
 
 The infrastructure is completely distributed. The most critical nodes are the Consul and if you require even higher availability you can configure HAProxy not to remove a backends unless they are explicitly de-registered from consul. that means even if Consul server fails you get to keep all backends until you restore consul server and during the downtime HAProxy will remove unhealthy backends if they begin to act odd.
 
@@ -136,7 +136,7 @@ The infrastructure is completely distributed. The most critical nodes are the Co
 The entry point is */bin/containerpilot"* this will also acts as PID 1.
 
 ### Built in hooks
-If you use watchers downstream changes in a service (new services registered, becomes unhealthy or goes away) will trigger HAPorxy to reaload and reflect current services.
+If you use watchers downstream changes in a service (new services registered, becomes unhealthy or goes away) will trigger HAPorxy to reload and reflect current services.
 check [changed-script](changed-script.sh)
 
 ### Hooks
@@ -146,7 +146,9 @@ You can add custom scripts that will be executed if it exist and is executable w
 | Location          | Description |
 |-------------------|-------------|
 | /hooks/preContainerPilot | Runs before container Pilot starting |
-| /hooks/prestart   | Runs before app start |
+| /hooks/preStart   | Runs before app start |
+| /hooks/renderConfigFiles| Generate config files |
+| /hooks/ConfigENV.ctmpl| A consul-template file formated in KEY=VALUE|
 | /hooks/preChange  | Runs after watcher change and before HAproxy reload  |
 | /hooks/postChange | Runs after watcher change and after HAproxy reload  |
 | /hooks/prestop    | Runs before stopping the app |
@@ -197,6 +199,7 @@ The group of variables that define application configuration.
 ### HAProxy
 | Variable        | Required | Default  | Description |
 |-----------------|----------|----------|-------------|
+|HAPROXY_BALANCE  |  No      | global   |             |
 |HAPROXY_STATS    |  No      | None     |             |
 |HAPROXY_BALANCE  |  No      |roundrobin|             |
 |HAPROXY_EXPORTER |  No      | None     |             |
@@ -208,10 +211,9 @@ The group of variables that define application configuration.
 | LOG_LEVEL         |  No      | INFO    |             |
 
 
-
 ## Running tests
 
-```
+```bash
 # Build image
 make build
 # Run tests (and try to do clean up)
@@ -225,5 +227,7 @@ make tests-debug
 * Add support for application config consul-template
 * CI
 * HAProxy
-** Enable default option for type of backedend TCP/HTTP
+  * Enable default option for type of backedend TCP/HTTP
+  * Draining connection
+* Make all hooks executable by default
 

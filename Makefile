@@ -1,6 +1,6 @@
 MAKEFLAGS += --warn-undefined-variables
 .DEFAULT_GOAL := build
-PHONY: all build test push push_latest clean
+PHONY: all build test push push-latest clean
 include ./packages.mk
 
 NAME	   := quay.io/ahelal/colossal
@@ -21,17 +21,18 @@ M = $(shell printf "\033[34;1m▶\033[0m")
 all: build
 
 build:
-	$(info $(M) Building ${NAME}:${VERSION}…)
-	@docker build ${BUILD_ARGS} --squash -t ${NAME}:${VERSION} -f Dockerfile .
+	$(info $(M) Building ${NAME}:${VERSION} and ${NAME}:dev …)
+	@docker build ${BUILD_ARGS} --squash -t ${NAME}:${VERSION} -t ${NAME}:dev -f Dockerfile .
 
-check_build:
+
+check-build:
 
 ifeq ($(docker images $(NAME) | awk '{print $$2 }' | grep $(VERSION)), "$(VERSION)")
 	$(info $(M) $(NAME) $(VERSION) is not yet built. Please run 'make build')
 	false
 endif
 
-tests: check_build
+tests: check-build
 	@docker tag $(NAME):$(VERSION) $(NAME):dev
 	$(info $(M) Running tests for $(NAME) $(VERSION) )
 	@./test/run_tests.sh tests
@@ -45,7 +46,7 @@ push:
 	$(info $(M) Pushing $(NAME):$(VERSION) )
 	@docker push "${NAME}:${VERSION}"
 
-push_latest:
+push-latest:
 	$(info $(M) Linking latest to $(NAME):$(VERSION) and pushing tag latest )
 	docker tag $(NAME):$(VERSION) $(NAME):latest
 	docker push "${NAME}:latest"
@@ -54,7 +55,7 @@ clean:
 	$(info $(M) Cleaning)
 	bundle exec kitchen destroy
 
-clean_all:
+clean-all:
 	$(info $(M) Cleaning all)
 	bundle exec kitchen destroy
 

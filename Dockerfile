@@ -22,10 +22,12 @@ ADD https://github.com/ben--/resu/releases/download/${RESU_VERSION}/resu-alpine 
 ADD https://github.com/prometheus/haproxy_exporter/releases/download/v${PROMETHEUS_HAPROXY_VERSION}/haproxy_exporter-${PROMETHEUS_HAPROXY_VERSION}.linux-amd64.tar.gz /tmp/haproxy_exporter.tar.gz
 
 RUN set -ex \
+    # ContainerPilot
     && echo "# CONTAINERPILOT" \
     && echo "${CONTAINERPILOT_CHECKSUM}  /tmp/containerpilot.tar.gz" | sha1sum -c \
     && tar zxf /tmp/containerpilot.tar.gz -C /bin \
     && rm /tmp/containerpilot.tar.gz \
+    # Consul
     && echo "${CONSUL_CHECKSUM}  /tmp/consul.zip" | sha256sum -c \
     && echo "# CONSUL" \
     && unzip /tmp/consul -d /usr/local/bin \
@@ -34,20 +36,25 @@ RUN set -ex \
     && mkdir -p /consul/config \
     && mkdir -p /consul/data \
     && chown -R consul /consul \
+    # Consul template
     && echo "# Consul-template" \
     && echo "${CONSUL_TEMPLATE_CHECKSUM}  /tmp/consul-template.zip" | sha256sum -c \
     && unzip /tmp/consul-template.zip -d /usr/local/bin \
     && mkdir -p /consul/template \
     && rm /tmp/consul-template.zip \
+    # Resu
     && echo "# resu" \
     && echo "${RESU_CHECKSUM}  /sbin/resu" | sha256sum -c \
     && chmod +x /sbin/resu \
+    # User APP
     && adduser -D app \
+    # Prometheus HAproxy exporter"
     && echo "#Prometheus HAproxy exporter" \
     && echo "${PROMETHEUS_HAPROXY_CHECKSUM}  /tmp/haproxy_exporter.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/haproxy_exporter.tar.gz -C /tmp \
     && cp /tmp/haproxy_exporter-${PROMETHEUS_HAPROXY_VERSION}.linux-amd64/haproxy_exporter /bin/haproxy_exporter \
     && rm -rf /tmp/haproxy_exporter.tar.gz /tmp/haproxy_exporter-${PROMETHEUS_HAPROXY_VERSION}.linux-amd64 \
+    # Setup versions
     && echo "# Set our version file" \
     && printf "name=%s\nimage=%s\nPilot=%s\nConsul=%s\nConsul-template=%s\n" \
               "Colossal" "${VERSION}" "${CONTAINERPILOT_VERSION}" \
@@ -65,7 +72,5 @@ COPY etc /etc
 COPY bin /usr/local/bin/
 COPY hooks /usr/local/bin/
 
-ADD cmd.sh /cmd.sh
-CMD [ "/cmd.sh"]
+CMD [ "/usr/local/bin/entryPointScript.sh"]
 #CMD [ "/bin/containerpilot", "-config", "/etc/containerpilot.json5"]
-

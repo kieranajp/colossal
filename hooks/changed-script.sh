@@ -30,7 +30,6 @@ echo "Run Conusl-template to generate template and reload if needed"
     -dedup \
     -template "/etc/haproxy.ctmpl:/etc/haproxy/haproxy.cfg:/usr/local/bin/haproxy-manage.sh reload"
 
-
 CUSTOM_SCRIPT="/hooks/postChange"
 if [ -x "${CUSTOM_SCRIPT}" ]; then
     echo "* Custom postChange script"

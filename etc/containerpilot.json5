@@ -12,6 +12,24 @@
       restarts: "never"
     },
     {
+      name: "configFiles",
+      when: {
+        source: "prestart",
+        once: "exitSuccess"
+      },
+      exec: "/usr/local/bin/renderConfigFiles.sh",
+      restarts: "never",
+    },
+    {
+      name: "configEnv",
+      when: {
+        source: "configFiles",
+        once: "exitSuccess"
+      },
+      exec: "/usr/local/bin/renderConfigEnv.sh",
+      restarts: "never",
+    },
+    {
       name: "{{ .APP_NAME }}",
       {{ if .APP_INTERFACES -}}
       interfaces: [ {{ range $i := .APP_INTERFACES | split "," }}"{{ $i }}", {{ end }} ],
@@ -22,7 +40,7 @@
       exec: "{{ .APP_EXEC }}",
       restarts: {{ .APP_RESTARTS | default 10 }},
       when: {
-        source: "prestart",
+        source: "configEnv",
         once: "exitSuccess",
       },
       {{ if .APP_HEALTH_EXEC -}}
