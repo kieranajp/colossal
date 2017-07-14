@@ -2,10 +2,8 @@
 ## This script is called before app starts
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
-CUSTOM_SCRIPT="/hooks/preStart"
-if [ -x "${CUSTOM_SCRIPT}" ]; then
-    echo "* Custom preStart script"
-    ${CUSTOM_SCRIPT}
-fi
+# Execute Hook preStart if exists
+execIfExists "/hooks/preStart" "* Custom preStart script"

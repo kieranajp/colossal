@@ -2,10 +2,8 @@
 ## This script is called to stop the app
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
-CUSTOM_SCRIPT="/hooks/stop"
-if [ -x "${CUSTOM_SCRIPT}" ]; then
-    echo "* Custom prestart stop"
-    ${CUSTOM_SCRIPT}
-fi
+# Execute Hook stop if exists
+execIfExists "/hooks/stop" "* Custom stop script"

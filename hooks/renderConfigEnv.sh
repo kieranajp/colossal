@@ -2,7 +2,8 @@
 ## This script is called to run config render script then inject it into env
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
 CONFIG_ENV_TEMPLATE="/hooks/ConfigENV.ctmpl"
 if [ -f "${CONFIG_ENV_TEMPLATE}" ]; then
@@ -13,6 +14,4 @@ if [ -f "${CONFIG_ENV_TEMPLATE}" ]; then
     -once \
     -dedup \
     -template "${CONFIG_ENV_TEMPLATE}:/etc/app_env:/usr/local/bin/setEnvFromFile.sh /etc/app_env"
-    echo "RETURN $?"
 fi
-

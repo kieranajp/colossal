@@ -1,7 +1,9 @@
 #!/bin/sh
 
-if [ -x "/hooks/preContainerPilot" ]; then
+if [ -f "/hooks/preContainerPilot" ]; then
     echo "* Sourcing custom /hooks/preContainerPilot"
+    chmod +x /hooks/preContainerPilot
+    # shellcheck disable=SC1091
     . /hooks/preContainerPilot
 fi
 

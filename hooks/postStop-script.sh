@@ -2,10 +2,9 @@
 ## This script is called after app stop
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
-CUSTOM_SCRIPT="/hooks/postStop"
-if [ -x "${CUSTOM_SCRIPT}" ]; then
-    echo "* Custom postStop script"
-    ${CUSTOM_SCRIPT}
-fi
+# Execute Hook postStop if exists
+execIfExists "/hooks/postStop" "* Custom postStop script"
+

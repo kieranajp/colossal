@@ -2,10 +2,8 @@
 ## This script is called to run config render
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
-CUSTOM_SCRIPT="/hooks/renderConfigFiles"
-if [ -x "${CUSTOM_SCRIPT}" ]; then
-    echo "* Custom configuration files script run"
-    ${CUSTOM_SCRIPT}
-fi
+# Execute Hook preStop if exists
+execIfExists "/hooks/renderConfigFiles" "* renderConfigFiles script"

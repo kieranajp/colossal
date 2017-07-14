@@ -2,10 +2,8 @@
 ## This script is called before app stops
 set -e
 
-[ "${LOG_LEVEL}" = "debug" ] && set -x
+# shellcheck disable=SC1091
+[ -z "${HELPER_IMPORTED+x}" ] && . /usr/local/bin/helper.sh
 
-CUSTOM_SCRIPT="/hooks/prestop"
-if [ -x "${CUSTOM_SCRIPT}" ]; then
-    echo "* Custom prestop script"
-    ${CUSTOM_SCRIPT}
-fi
+# Execute Hook preStop if exists
+execIfExists "/hooks/preStop" "* Custom preStop script"
