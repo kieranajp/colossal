@@ -217,7 +217,7 @@ The group of variables that define application configuration.
 |-----------------|----------|----------|-------------|
 |HAPROXY_STATS    |  No      | None     |             |
 |HAPROXY_BALANCE  |  No      |roundrobin|             |
-|HAPROXY_LOG      |  No      |global|             |
+|HAPROXY_LOG      |  No      |127.0.0.1 local0|             |
 |HAPROXY_EXPORTER |  No      | None     |             |
 
 ### Debugging
@@ -225,7 +225,6 @@ The group of variables that define application configuration.
 | Variable          | Required | Default | Description |
 |-------------------|----------|---------|-------------|
 | LOG_LEVEL         |  No      | INFO    |             |
-
 
 ## Running tests
 
@@ -240,9 +239,7 @@ make tests-debug
 
 ## TODO
 
-* Add support for application config consul-template
-* CI
+* Implement CI pipeline
 * HAProxy
   * Enable default option for type of backedend TCP/HTTP
   * Draining connection
-* Make all hooks executable by default

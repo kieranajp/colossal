@@ -1,6 +1,8 @@
 tests/*
+examples/*
 Gemfile
 Gemdile.lock
 Makefile
 packages.mk
 VERSION
+.DS_Store

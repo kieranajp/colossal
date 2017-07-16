@@ -8,14 +8,13 @@ global
     maxconn       8192
     stats         socket /var/lib/haproxy/stats.sock group haproxy mode 660 level admin
     chroot        /var/lib/haproxy
+    log           {{ or (env "HAPROXY_LOG") "127.0.0.1 local0" }}
 
 defaults
-    log        {{ or (env "HAPROXY_LOG") "global" }}
+    log        global
     option     dontlognull
     option     log-separate-errors
     option     dontlog-normal
-    option     httplog
-
     option     redispatch
     # https://cbonte.github.io/haproxy-dconv/1.8/configuration.html#4-timeout%20check
     ## HTTP
@@ -58,12 +57,13 @@ listen stats
 backend {{ $ServiceName }}
     mode {{ $ServiceMode }}
     balance {{ $ServiceBalance }}
-    #TODO: option {{ $ServiceOptions }} tcplog or httplog
+    option  {{ $ServiceMode }}log
     {{ range service ( printf "%s" $ServiceName) }}
     server {{.ID}}_{{.Address}}:{{.Port}} {{.Address}}:{{.Port}} {{ $ServiceOptions }}
     {{ end }}
 frontend {{ $ServiceName }}
     mode {{ $ServiceMode }}
+    option  {{ $ServiceMode }}log
     bind localhost:{{ $ServicePort }}
     default_backend {{ $ServiceName }}
 {{ end }}{{- end}}
