@@ -9,7 +9,13 @@ flask==0.12
 redis==2.10.5
 """ > /requirements.txt
 
-echo """#!/usr/bin/env python
+# Create the env template
+cat > /hooks/ConfigENV.ctmpl <<EOL
+MYPILOT_ENV_CONF=CONTAINERPILOT
+EOL
+
+cat > /app.py <<EOL
+#!/usr/bin/env python
 import os
 import socket
 
@@ -33,9 +39,16 @@ def hello():
 
     return msg
 
+@app.route('/env')
+def helloEnv():
+    mypilot_conf = os.environ.get('MYPILOT_ENV_CONF', 'NOTDEFINED')
+    msg='ENV={}'.format(mypilot_conf)
+
+    return msg
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=bind_port, debug=False)""" > /app.py
+    app.run(host='0.0.0.0', port=bind_port, debug=False)
+EOL
 
 pip install -r /requirements.txt
 chmod +x /app.py

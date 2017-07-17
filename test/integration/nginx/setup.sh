@@ -5,7 +5,8 @@ DIR="$(cd "$(dirname "$0")" && pwd )"  # absolutized and normalized
 apk add --update-cache curl bash openrc nginx
 
 mkdir -p /run/nginx/
-cat > /etc/nginx/conf.d/default.conf <<EOL
+# Create config template
+cat > /etc/nginx_template.conf.ctmpl <<EOL
 server {
         listen 80 default_server;
         listen [::]:80 default_server;
@@ -15,9 +16,20 @@ server {
             return 200 "healthy\n";
         }
         location / {
-            proxy_pass http://127.0.0.1:8080;
+            proxy_pass http://127.0.0.1:8889;
         }
 }
+EOL
+
+# Create run config scripit
+cat > /hooks/renderConfigFiles <<EOL
+#!/bin/sh
+/usr/local/bin/consul-template \
+    -consul-addr "${CONSUL_ADDR}":8500  \
+    -once \
+    -dedup \
+    -template "/etc/nginx_template.conf.ctmpl:/etc/nginx/conf.d/default.conf"
+
 EOL
 
 grep -q -F 'daemon off;' /etc/nginx/nginx.conf || echo 'daemon off;' >> /etc/nginx/nginx.conf

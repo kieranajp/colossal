@@ -20,8 +20,8 @@ describe 'service pilot-nginx' do
 end
 
 describe 'service dependency' do
-  describe 'localport 8080 is open by haproxy' do
-    describe port(8080) do
+  describe 'localport 8889 is open by haproxy' do
+    describe port(8889) do
       it { should be_listening.on('127.0.0.1').with('tcp') }
     end
   end

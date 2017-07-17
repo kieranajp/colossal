@@ -6,7 +6,7 @@ describe 'service pilot-app' do
       its(:exit_status) { should eq 0 }
       its(:stdout) { should contain '"ServiceName":"pilot-app"' }
       its(:stdout) { should contain '"ServiceTags":\["TEST","v1.1.1","Development"]'}
-      its(:stdout) { should contain '"ServicePort":8080' }
+      its(:stdout) { should contain '"ServicePort":8889' }
     end
   end
 

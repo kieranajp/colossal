@@ -25,12 +25,12 @@ suites                      :
       environment           :
           CONSUL            : "pilot-consul"
           APP_NAME          : "pilot-app"
-          APP_PORT          : 8080
+          APP_PORT          : 8889
           APP_EXEC          : resu app:app -- /app.py
           APP_TAGS          : "TEST,v1.1.1,Development"
           APP_RESTARTS      : 1
           APP_TIMEOUT       : 0
-          APP_HEALTH_EXEC   : "curl -fsSo /dev/null http://127.0.0.1:8080"
+          APP_HEALTH_EXEC   : "curl -fsSo /dev/null http://127.0.0.1:8889"
           SERVICE_NAME_23   : "pilot-redis"
           SERVICE_PORT_23   : "6379"
           SERVICE_MODE_23   : "tcp"
@@ -40,7 +40,7 @@ suites                      :
       link                  :
       - pilot-consul
       publish               :
-       - 8080:8080
+       - 8889:8889
        - 3212:3212
        - 9101:9101
     provisioner             :
@@ -57,7 +57,7 @@ suites                      :
           APP_TIMEOUT       : 0
           APP_HEALTH_EXEC   : "curl -fsSo /dev/null http://127.0.0.1/status"
           SERVICE_NAME_1    : "pilot-app"
-          SERVICE_PORT_1    : "8080"
+          SERVICE_PORT_1    : "8889"
           SERVICE_MODE_1    : "http"
       link                  :
       - pilot-consul
