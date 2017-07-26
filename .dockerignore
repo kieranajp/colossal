@@ -1,5 +1,6 @@
 tests/*
 examples/*
+ci/*
 Gemfile
 Gemdile.lock
 Makefile

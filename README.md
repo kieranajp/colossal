@@ -2,7 +2,7 @@
 
 A base image based on Alpine that utilizes the autopilot pattern with client side load balancing.
 
-## Why ?
+## Why
 
 Missing gap between packing "Docker image" and service orchestration. Autopilot pattern is concerned about application life cycle. Colossal is an opinionated implementation that uses container pilot.
 
@@ -16,7 +16,6 @@ Missing gap between packing "Docker image" and service orchestration. Autopilot 
 * Secrets injected into your application configuration (currently support vault).
 * Aggregation of stdout and stderr logs.
 * Telemetry support.
-
 
 ## Example Docker file
 
@@ -113,6 +112,7 @@ Components of a producer:
 In order to know whether a producer is healthy, The consul agent performs health checks, and if it fail the service is de-registered. The health check is a command that is executed every interval inside the container by consul-agent. The health check could be a simple curl `curl localhost:8080/` or better implement a custom health endpoint that will returns 200 if all  is okay. That part is up to you implement.
 You can also write a script that does a simple basic health. it checks connection and get some data and asserts it.
   exits with a non-zero if something is wrong.
+
 ```bash
 #!/bin/sh
 set -e
@@ -240,6 +240,16 @@ make tests-debug
 ## TODO
 
 * Implement CI pipeline
+* PR
+  * build and push image
+  * run test
+* Master
+  * build and push image
+  * run test
+  * do api quai.io
+* Every day
+  * Run Security check
+
 * HAProxy
   * Enable default option for type of backedend TCP/HTTP
   * Draining connection

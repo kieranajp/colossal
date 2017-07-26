@@ -1,0 +1,12 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: quay.io/hellofresh/golang-docker-daemon}
+
+inputs:
+  - name: source
+
+run:
+  path: source/ci/scripts/build.sh

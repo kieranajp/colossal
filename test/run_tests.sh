@@ -1,6 +1,6 @@
 #!/bin/sh
 ## This script orchestrates the test-kitchen
-set -e
+set -ex
 
 DIR="$(cd "$(dirname $0)" && pwd )"  # absolutized and normalized
 cd "${DIR}/../"
