@@ -18,3 +18,6 @@ RESU_CHECKSUM := $(shell cat packages.json | grep "RESU_CHECKSUM" | cut -f2 -d: 
 # Releases at https://github.com/prometheus/haproxy_exporter/releases
 PROMETHEUS_HAPROXY_VERSION	:= $(shell cat packages.json | grep "PROMETHEUS_HAPROXY_VERSION" | cut -f2 -d: | cut -d '"' -f2 )
 PROMETHEUS_HAPROXY_CHECKSUM := $(shell cat packages.json | grep "PROMETHEUS_HAPROXY_CHECKSUM" | cut -f2 -d: | cut -d '"' -f2 )
+# Releases at https://github.com/hellofresh/consul-template-plugin-ssm/releases
+CONSUL_TEMPLATE_PLUGIN_SSM_VERSION := $(shell cat packages.json | grep "CONSUL_TEMPLATE_PLUGIN_SSM_VERSION" | cut -f2 -d: | cut -d '"' -f2 )
+CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM := $(shell cat packages.json | grep "CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM" | cut -f2 -d: | cut -d '"' -f2 )

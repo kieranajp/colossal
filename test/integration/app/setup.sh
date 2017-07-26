@@ -12,6 +12,7 @@ redis==2.10.5
 # Create the env template
 cat > /hooks/ConfigENV.ctmpl <<EOL
 MYPILOT_ENV_CONF=CONTAINERPILOT
+MYPILOT_PASSWORD={{ plugin "ssm" "-test-mode" "TEST_PARAM_VALUE" }}
 EOL
 
 cat > /app.py <<EOL
@@ -45,6 +46,14 @@ def helloEnv():
     msg='ENV={}'.format(mypilot_conf)
 
     return msg
+
+@app.route('/env_encrypted')
+def helloEncryptedEnv():
+    mypilot_password = os.environ.get('MYPILOT_PASSWORD', 'NOTDEFINED')
+    msg='ENV={}'.format(mypilot_password)
+
+    return msg
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=bind_port, debug=False)

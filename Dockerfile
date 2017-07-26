@@ -1,6 +1,6 @@
 FROM alpine:3.6
 
-## All this ARGS must be passeed during build time
+## All these options must be passed during build time
 ARG VERSION
 ARG CONTAINERPILOT_VERSION
 ARG CONTAINERPILOT_CHECKSUM
@@ -8,6 +8,8 @@ ARG CONSUL_VERSION
 ARG CONSUL_CHECKSUM
 ARG CONSUL_TEMPLATE_VERSION
 ARG CONSUL_TEMPLATE_CHECKSUM
+ARG CONSUL_TEMPLATE_PLUGIN_SSM_VERSION
+ARG CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM
 ARG RESU_VERSION
 ARG RESU_CHECKSUM
 ARG PROMETHEUS_HAPROXY_VERSION
@@ -57,14 +59,22 @@ RUN echo "# Prometheus HAproxy exporter" && echo "" \
     && tar zxvf /tmp/haproxy_exporter.tar.gz -C /tmp \
     && cp /tmp/haproxy_exporter-${PROMETHEUS_HAPROXY_VERSION}.linux-amd64/haproxy_exporter /bin/haproxy_exporter
 
+# Consul-template SSM plugin
+RUN echo "# Consul-template SSM plugin" && echo "" \
+    && curl --retry 3 -Lf -o /tmp/ssm.tar.gz "https://github.com/hellofresh/consul-template-plugin-ssm/releases/download/${CONSUL_TEMPLATE_PLUGIN_SSM_VERSION}/ssm.tar.gz" \
+    && echo "${CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM}  /tmp/ssm.tar.gz" | sha256sum -c \
+    && tar zxf /tmp/ssm.tar.gz -C /bin \
+    && chmod +x /bin/ssm
+
 # Setup versions
-RUN  printf "%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n" \
+RUN  printf "%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n" \
                 "Colossal" "${VERSION}" \
                 "CONTAINERPILOT"  "${CONTAINERPILOT_VERSION}" \
                 "CONSUL" "${CONSUL_VERSION}" \
                 "CONSUL_TEMPLATE" "${CONSUL_TEMPLATE_VERSION}" \
                 "RESU" "${RESU_VERSION}" \
                 "PROMETHEUS_HAPROXY" "${PROMETHEUS_HAPROXY_VERSION}" \
+                "consul-template-plugin-ssm" "${CONSUL_TEMPLATE_PLUGIN_SSM_VERSION}" \
                 > /VERSION
 
 # Install HAProxy and some cleanup
