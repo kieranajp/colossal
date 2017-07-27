@@ -9,5 +9,5 @@ inputs:
   - name: source
 
 run:
-  path: ci/scripts/build.sh
+  path: ci/scripts/test.sh
   dir: source

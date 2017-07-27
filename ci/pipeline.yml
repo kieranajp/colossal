@@ -1,0 +1,160 @@
+---
+
+resource_types    :
+  - name          : pull-request
+    type          : docker-image
+    source        :
+      repository  : jtarchie/pr
+
+###############################
+# Resources
+###############################
+resources:
+- name: master
+  type: git
+  source:
+    uri: https://github.com/ahelal/colossal.git
+    branch: master
+
+- name: pr
+  type: pull-request
+  source:
+      access_token: {{github_token}}
+      repo: ahelal/colossal
+      base: master
+      disable_forks: true
+
+###############################
+# Groups
+###############################
+groups:
+- name: All
+  jobs:
+    - Build-Master
+    - Test-Master
+    - Build-PR
+    - Test-PR
+- name: Master
+  jobs:
+    - Build-Master
+    - Test-Master
+- name: PR
+  jobs:
+    - Build-PR
+    - Test-PR
+###############################
+# Jobs
+###############################
+
+jobs:
+#
+# Merge to master
+#
+- name: Build-Master
+  serial: true
+  plan:
+  - get: source
+    resource: master
+    version: every
+    trigger: true
+
+  - task: Build dev image
+    file: source/ci/tasks/build.yml
+    privileged: true
+    params:
+      DOCKER_TAG: master
+      DOCKER_USER: {{docker_user}}
+      DOCKER_PASSWORD: {{docker_password}}
+
+- name: Test-Master
+  serial: true
+  plan:
+  - get: source
+    resource: master
+    version: every
+    passed: [ Build-Master ]
+    trigger: true
+
+  - task: test
+    file: source/ci/tasks/test.yml
+    privileged: true
+    params:
+      DOCKER_TAG: master
+      DOCKER_USER: {{docker_user}}
+      DOCKER_PASSWORD: {{docker_password}}
+
+#
+# PR
+#
+- name: Build-PR
+  serial: true
+  plan:
+  - get: source
+    resource: pr
+    version: every
+    trigger: true
+
+  - put: source
+    resource: pr
+    params:
+      path: source
+      context: build
+      status: pending
+
+  - task: Build dev image
+    file: source/ci/tasks/build.yml
+    privileged: true
+    params:
+      DOCKER_TAG: pr
+      DOCKER_USER: {{docker_user}}
+      DOCKER_PASSWORD: {{docker_password}}
+
+  on_success:
+    put: pr
+    params:
+      path: source
+      context: build
+      status: success
+  on_failure:
+    put: pr
+    params:
+      path: source
+      context: build
+      status: failure
+
+- name: Test-PR
+  serial: true
+  plan:
+  - get: source
+    resource: pr
+    version: every
+    passed: [ Build-PR ]
+    trigger: true
+
+  - put: source
+    resource: pr
+    params:
+      path: source
+      context: test
+      status: pending
+
+  - task: test
+    file: source/ci/tasks/test.yml
+    privileged: true
+    params:
+      DOCKER_TAG: pr
+      DOCKER_USER: {{docker_user}}
+      DOCKER_PASSWORD: {{docker_password}}
+
+  on_success:
+    put: pr
+    params:
+      path: source
+      context: test
+      status: success
+  on_failure:
+    put: pr
+    params:
+      path: source
+      context: test
+      status: failure

@@ -1,12 +1,20 @@
 #!/bin/sh
 set -e
 
-MAIN_DIR="$(pwd)"
+. "./ci/scripts/dockerStart.sh"
 
-echo "* Building Colossal docker image"
-cd "${source}" || echo "failed to cd into source. ${source}"
-make build
+echo "* Installing GNU make"
+apk add --update make
 
-echo "* Exporting Image"
-cd "${MAIN_DIR}" || echo "failed to cd into main dir. ${MAIN_DIR}"
-docker save quay.io/ahelal/colossal:dev | gzip > colossal_dev.tar.gz
+echo "* Installing docker-squash"
+pip install docker-squash
+
+# Building Colossal docker image
+make build "CI_LABEL=${DOCKER_TAG}"
+
+# Squashing layers
+make squash "CI_LABEL=${DOCKER_TAG}"
+
+# Pushing image
+docker login -u="${DOCKER_USER}" -p="${DOCKER_PASSWORD}" quay.io
+make push-label "CI_LABEL=${DOCKER_TAG}"
