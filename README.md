@@ -239,17 +239,10 @@ make tests-debug
 
 ## TODO
 
-* Implement CI pipeline
-* PR
-  * build and push image
-  * run test
-* Master
-  * build and push image
-  * run test
-  * do api quai.io
-* Every day
-  * Run Security check
+* CI
+  * Release and push new version
+  * Run Security check to quay.io
 
 * HAProxy
-  * Enable default option for type of backedend TCP/HTTP
+  * Enable default option for type of backend TCP/HTTP
   * Draining connection
