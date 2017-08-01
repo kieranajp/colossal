@@ -12,7 +12,7 @@ execIfExists "/hooks/preChange" "* Custom preChange script"
 
 echo "Run Conusl-template to generate template and reload if needed"
 /usr/local/bin/consul-template \
-    -consul-addr "${CONSUL_ADDR}":8500  \
+    -consul-addr localhost:8500  \
     -once \
     -dedup \
     -template "/etc/haproxy.ctmpl:/etc/haproxy/haproxy.cfg:/usr/local/bin/haproxy-manage.sh reload"

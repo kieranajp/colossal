@@ -25,7 +25,7 @@ RUN pip install -r /requirements.txt \
 RUN rm -rf /var/cache/apk/* \
     && rm -rf /root/.cache/
 
-# ADD env.ctmpl /hooks/ConfigENV.ctmpl
+# ADD env.ctmpl /hooks/configENV.ctmpl
 # ADD r /hooks/renderConfigFiles
 
 #ADD DIE /hooks/preStart

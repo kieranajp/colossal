@@ -10,7 +10,7 @@ redis==2.10.5
 """ > /requirements.txt
 
 # Create the env template
-cat > /hooks/ConfigENV.ctmpl <<EOL
+cat > /hooks/configENV.ctmpl <<EOL
 MYPILOT_ENV_CONF=CONTAINERPILOT
 MYPILOT_PASSWORD={{ plugin "ssm" "-test-mode" "TEST_PARAM_VALUE" }}
 EOL

@@ -11,11 +11,8 @@ checkDebug(){
     [ "${LOG_LEVEL}" = "debug" ] && set -x
 }
 
-# Set consul adder
-export CONSUL_ADDR="${CONSUL-localhost}"
-
 # Run a script if the file exists
-# $1 path to file
+# $1 Path to file
 # $2 Message to print before exection (optional)
 execIfExists(){
     CUSTOM_SCRIPT="${1}"

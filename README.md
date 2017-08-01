@@ -160,7 +160,7 @@ You can add custom scripts that will be executed if it exist and is executable w
 | /hooks/preContainerPilot | Runs before container Pilot starting |
 | /hooks/preStart   | Runs before app start |
 | /hooks/renderConfigFiles| Generate config files |
-| /hooks/ConfigENV.ctmpl| A consul-template file formated in KEY=VALUE|
+| /hooks/configENV.ctmpl| A consul-template file formated in KEY=VALUE|
 | /hooks/preChange  | Runs after watcher change and before HAproxy reload  |
 | /hooks/postChange | Runs after watcher change and after HAproxy reload  |
 | /hooks/preStop    | Runs before stopping the app |
@@ -190,7 +190,6 @@ The group of variables that define application configuration.
 |APP_HEALTH_INTERVAL|  NO      | 10      |             |
 |APP_HEALTH_TIMEOUT |  No      | 5       |             |
 
-
 ### Consul variables
 
 | Variable          | Required | Default | Description |
@@ -198,6 +197,7 @@ The group of variables that define application configuration.
 | CONSUL            |  No      |127.0.0.1|             |
 | CONSUL_ENCRYPT    |  Yes     | None    |Consul encrypt without the '==' at the end|
 | CONSUL_DATACENTER |  No      | dc1     |              |
+| CONSUL_CONFIG_FILE|  No      |         | Path to optional consul config file |
 
 ### Service (Service dependency)
 
@@ -217,7 +217,7 @@ The group of variables that define application configuration.
 |-----------------|----------|----------|-------------|
 |HAPROXY_STATS    |  No      | None     |             |
 |HAPROXY_BALANCE  |  No      |roundrobin|             |
-|HAPROXY_LOG      |  No      |127.0.0.1 local0|             |
+|HAPROXY_LOG      |  No      |127.0.0.1 local0|       |
 |HAPROXY_EXPORTER |  No      | None     |             |
 
 ### Debugging
@@ -237,12 +237,3 @@ make tests
 make tests-debug
 ```
 
-## TODO
-
-* CI
-  * Release and push new version
-  * Run Security check to quay.io
-
-* HAProxy
-  * Enable default option for type of backend TCP/HTTP
-  * Draining connection

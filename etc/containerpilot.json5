@@ -21,6 +21,31 @@
       restarts: "never",
     },
     {
+      name: "consul-agent",
+      exec: [ "/sbin/resu", "consul:consul", "--", "/usr/local/bin/consul",
+                  "agent",
+                  "-disable-host-node-id",
+                  "-node={{ .HOSTNAME }}-{{ .APP_NAME }}",
+                  "-data-dir=/consul/data/",
+                  "-config-dir=/consul/config/",
+                  {{ if .CONSUL_ENCRYPT -}}
+                  "-encrypt={{ .CONSUL_ENCRYPT }}==",
+                  {{ end -}}
+                  {{ if .CONSUL_CONFIG_FILE -}}
+                  "-config-file={{ .CONSUL_CONFIG_FILE }}",
+                  {{ end -}}
+                  "-datacenter={{ or .CONSUL_DATACENTER "dc1" }}",
+                  "-rejoin",
+                  "-retry-join", "{{ .CONSUL }}",
+                  "-retry-max", "10",
+                  "-retry-interval", "10s"],
+      restarts: "unlimited",
+      when: {
+        source: "configFiles",
+        once: "exitSuccess",
+      },
+    },
+    {
       name: "configEnv",
       when: {
         source: "configFiles",
@@ -84,24 +109,6 @@
       timeout: "10s"
     },
     {{- end }}{{- end }}
-    {
-      name: "consul-agent",
-      exec: [ "/sbin/resu", "consul:consul", "--", "/usr/local/bin/consul",
-                  "agent",
-                  "-disable-host-node-id",
-                  "-node={{ .HOSTNAME }}-{{ .APP_NAME }}",
-                  "-data-dir=/consul/data/",
-                  "-config-dir=/consul/config/",
-                  {{ if .CONSUL_ENCRYPT -}}
-                  "-encrypt={{ .CONSUL_ENCRYPT }}==",
-                  {{ end -}}
-                  "-datacenter={{ or .CONSUL_DATACENTER "dc1" }}",
-                  "-rejoin",
-                  "-retry-join", "{{ .CONSUL }}",
-                  "-retry-max", "10",
-                  "-retry-interval", "10s"],
-      restarts: "unlimited"
-    },
     {
       name: "preStop-consul",
       when: {
