@@ -16,7 +16,7 @@ BUILD_ARGS :=  	--build-arg VERSION=${VERSION} \
 
 M = $(shell printf "\033[34;1m▶\033[0m")
 # Default to PR  can be overwriten from command line
-CI_LABEL = PR
+CI_LABEL = pr
 
 all: build
 

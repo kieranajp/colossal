@@ -103,6 +103,15 @@
       restarts: "unlimited"
     },
     {
+      name: "preStop-consul",
+      when: {
+        source: "consul-agent",
+        once: "stopping"
+      },
+      exec: "/usr/local/bin/preStopConsul-script.sh",
+      restarts: "never"
+    },
+    {
        name: "haproxy",
        exec: ["/usr/local/bin/haproxy-manage.sh", "start"],
        restarts: "never"
