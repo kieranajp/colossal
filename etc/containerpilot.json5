@@ -63,7 +63,7 @@
       {{ end -}}{{ end -}}
       port: {{ .APP_PORT }},
       exec: "{{ .APP_EXEC }}",
-      restarts: {{ .APP_RESTARTS | default 10 }},
+      restarts: {{ .APP_RESTARTS | default 0 }},
       when: {
         source: "configEnv",
         once: "exitSuccess",
@@ -134,6 +134,26 @@
       },
     },
 {{- end }}
+    {
+      name: "term-{{ .APP_NAME }}",
+      when: {
+        source: "{{ .APP_NAME  }}",
+        once: "stopped"
+      },
+      exec: "/usr/local/bin/term.sh",
+      restarts: "never"
+    },
+    {{ range $i := "prestart,configFiles,configEnv" | split "," -}}
+    {
+      name: "term-{{ . }}",
+      when: {
+        source: "{{ . }}",
+        once: "exitFailed"
+      },
+      exec: "/usr/local/bin/term.sh {{ . }}",
+      restarts: "never"
+    },
+    {{ end }}
   ],
   watches: [
     {{ range $i := loop 0 30 -}}{{ if (env (printf "SERVICE_NAME_%d" $i)) -}}

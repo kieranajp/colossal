@@ -32,7 +32,7 @@ ENV APP_EXEC          resu app:app -- /app
 # Health check config for consul
 ENV APP_HEALTH_EXEC   "curl -fsSo /dev/null http://127.0.0.1:8080"
 # Attempts to restart the process if it exists
-ENV APP_RESTARTS      10
+ENV APP_RESTARTS      2
 
 # Our Application
 COPY app /
@@ -184,7 +184,7 @@ The group of variables that define application configuration.
 |APP_INTERFACES     |  NO      | None    | Comma separated parameters [check container pilot doc](https://github.com/joyent/containerpilot/blob/master/docs/30-configuration/32-configuration-file.md#interfaces)|
 |APP_POLL           |  NO      | None    |             |
 |APP_TAGS           |  NO      | None    |             |
-|APP_RESTARTS       |  NO      | 10      | Number of times the process will be restarted if it exits. This field supports any non-negative numeric value (ex. 0 or 1) or the strings "unlimited" or "never"|
+|APP_RESTARTS       |  NO      | 0      | Number of times the process will be restarted if it exits. This field supports any non-negative numeric value (ex. 0 or 1) or the strings "unlimited" or "never"|
 |APP_HEALTH_EXEC    |  NO      | None    |             |
 |APP_HEALTH_TTL     |  NO      | 25      |             |
 |APP_HEALTH_INTERVAL|  NO      | 10      |             |
