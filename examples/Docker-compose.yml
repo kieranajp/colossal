@@ -19,10 +19,11 @@ services:
       - consul
     environment:
       - CONSUL=consul
+      - LOG_LEVEL=DEBUG
     links:
     - consul
     ports:
-      - "8000:80"
+      - "8888:8888"
       - "3212:3212"
   app:
     build:
@@ -44,6 +45,18 @@ services:
       - consul
     environment:
       - CONSUL=consul
+      - LOG_LEVEL=DEBUG
+    links:
+    - consul
+  abc:
+    build:
+      context: ./abc
+    depends_on:
+#      - redis
+      - consul
+    environment:
+      - CONSUL=consul
+      - LOG_LEVEL=DEBUG
     links:
     - consul
  #   env_file:
