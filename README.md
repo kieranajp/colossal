@@ -1,3 +1,4 @@
+[![Docker Repository on Quay](https://quay.io/repository/ahelal/colossal/status "Docker Repository on Quay")](https://quay.io/repository/ahelal/colossal)
 # Colossal
 
 A base image based on Alpine that utilizes the autopilot pattern with client side load balancing.
