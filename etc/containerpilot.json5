@@ -39,7 +39,7 @@
                   "-retry-join", "{{ .CONSUL }}",
                   "-retry-max", "10",
                   "-retry-interval", "10s"],
-      stopTimeout: "5s",
+      stopTimeout: "3s",
       when: {
         source: "configFiles",
         once: "exitSuccess",
