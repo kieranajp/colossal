@@ -15,7 +15,7 @@ ARG RESU_CHECKSUM
 ARG PROMETHEUS_HAPROXY_VERSION
 ARG PROMETHEUS_HAPROXY_CHECKSUM
 
-# Add curl for downloading
+# Add curl for downloading will be removed during cleanup
 RUN apk add --update curl ca-certificates
 
 # Create hooks dir and user app
@@ -77,8 +77,13 @@ RUN  printf "%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n%s=%s\n" \
                 "consul-template-plugin-ssm" "${CONSUL_TEMPLATE_PLUGIN_SSM_VERSION}" \
                 > /VERSION
 
-# Install HAProxy and some cleanup
+# Install HAProxy
 RUN apk --no-cache add haproxy
+
+# Copy config, bin and hooks
+COPY etc /etc
+COPY bin /usr/local/bin/
+COPY hooks /usr/local/bin/
 
 # Do some clean up
 RUN echo "# Cleaning up" && echo "" \
@@ -87,9 +92,4 @@ RUN echo "# Cleaning up" && echo "" \
     && rm -rf /var/cache/apk/* \
     && rm -rf /root/.cache/
 
-# Copy config, bin and hooks
-COPY etc /etc
-COPY bin /usr/local/bin/
-COPY hooks /usr/local/bin/
-
-CMD [ "/usr/local/bin/entryPointScript.sh"]
+CMD [ "/bin/containerpilot", "-config", "/etc/containerpilot.json5"]

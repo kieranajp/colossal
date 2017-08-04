@@ -142,9 +142,16 @@ Doing debugging or maintenance on a backend is as simple as stopping the Consul-
 
 The infrastructure is completely distributed. The most critical nodes are the Consul and if you require even higher availability you can configure HAProxy not to remove a backends unless they are explicitly de-registered from consul. that means even if Consul server fails you get to keep all backends until you restore consul server and during the downtime HAProxy will remove unhealthy backends if they begin to act odd.
 
+## Use case
+
+* You application is a network based Application that exposes a single TCP port
+* That you wil
+
 ## Events
 
-The entry point is */bin/containerpilot"* this will also acts as PID 1.
+Colossal is designed with predefined Application life cycle. The entry point is */bin/containerpilot"* this will also acts as PID 1.
+
+![Flow](https://user-images.githubusercontent.com/4069495/28960738-1930b26a-7900-11e7-8c60-b5cb1f00e5f2.png)
 
 ### Built in hooks
 
@@ -157,7 +164,6 @@ You can add custom scripts that will be executed if it exist and is executable w
 
 | Location          | Description |
 |-------------------|-------------|
-| /hooks/preContainerPilot | Runs before container Pilot starting |
 | /hooks/preStart   | Runs before app start |
 | /hooks/renderConfigFiles| Generate config files |
 | /hooks/configENV.ctmpl| A consul-template file formated in KEY=VALUE|
