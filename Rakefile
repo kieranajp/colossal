@@ -2,7 +2,7 @@ require 'docker'
 require 'json'
 require 'rspec/core/rake_task'
 
-task default: %w[tests]
+task default: %w[all]
 
 PATH    = File.dirname(__FILE__)
 NAME    = 'quay.io/ahelal/colossal'.freeze
@@ -88,7 +88,11 @@ task :verify => %w[verify-redis verify-app verify-nginx verify-hooks] do
 end
 
 desc 'Build, bring up cluser, test, destroy'
-task :tests => %w[build compose-down compose-build compose-up sleep verify] do
+task :all => %w[build tests] do
+end
+
+desc 'Bring up cluser, test, destroy'
+task :tests => %w[compose-down compose-build compose-up sleep verify] do
   # Lets destroy hooks
   # container_id = container_running?("test_hooks")
   # if container_id
