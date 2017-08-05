@@ -19,6 +19,9 @@ bundle exec rake tests
 bundle exec rake clean
 # clean every thing including image
 bundle exec rake clean-all
+
+# To list all tasks
+bundle exec rake --tasks
 ```
 
 ## Details

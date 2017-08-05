@@ -2,7 +2,7 @@ require 'docker'
 require 'json'
 require 'rspec/core/rake_task'
 
-task default: %w[help]
+task default: %w[all]
 
 PATH    = File.dirname(__FILE__)
 NAME    = 'quay.io/ahelal/colossal'.freeze
@@ -24,8 +24,19 @@ BUILD_ARGS = "--build-arg VERSION=#{VERSION}" \
 ARROW = "\033[34;1m▶\033[0m".freeze
 CI_LABEL = 'pr'
 
+def print_title(msg)
+  puts '', "#{ARROW} #{msg} ..."
+end
+
 def print_msg(msg)
-  puts '', "#{ARROW} #{msg} ...", ''
+  puts " => #{msg}"
+end
+
+def remove_image(name, force)
+  return false unless Docker::Image.exist?(name)
+  print_msg("Removing image #{name}")
+  Docker::Image.get(name)
+  Docker::Image.remove(name, :force => force)
 end
 
 def container_running?(name)
@@ -41,49 +52,119 @@ def run_test(name, path)
   container_id = container_running?(name)
   raise "Container not running #{name}" unless container_id
   ENV['KITCHEN_CONTAINER_ID'] = container_id
-  print_msg("Running tests for #{name}")
+  print_title("Running tests for #{name}")
   RSpec::Core::RakeTask.new(name) do |t|
     t.pattern = path
   end
   Rake::Task[name].execute
 end
 
+#
+# TASKS
+#
+
+desc 'Run test on app'
 task :'test-app' do
   run_test('test_app', 'test/spec/app/*_spec.rb')
 end
 
+desc 'Run test on redis'
 task :'test-redis' do
   run_test('test_redis', 'test/spec/redis/*_spec.rb')
 end
 
+desc 'Run test on nginx'
 task :'test-nginx' do
   run_test('test_nginx', 'test/spec/nginx/*_spec.rb')
 end
 
-task :tests => %w[build compose_down compose_up test-redis test-app test-nginx] do
-  Rake::Task['compose_down'].execute
+desc 'Verify tests'
+task :verify => %w[test-redis test-app test-nginx] do
+  Rake::Task['compose-down'].execute
 end
 
-desc 'Start consul server'
-task :build do
-  print_msg("Building #{NAME}:#{VERSION}, #{NAME}:#{CI_LABEL} and #{NAME}:dev …")
-  sh "docker build #{BUILD_ARGS} -t #{NAME}:dev -t #{NAME}:#{CI_LABEL} -t #{NAME}:#{VERSION} -f Dockerfile ."
+desc 'Build, bring up cluser, test, destroy'
+task :tests => %w[build compose-down compose-build compose-up sleep verify] do
+  Rake::Task['compose-down'].execute
 end
 
 desc 'Build Colossal docker container'
 task :build do
-  print_msg("Building #{NAME}:#{VERSION}, #{NAME}:#{CI_LABEL} and #{NAME}:dev …")
+  print_title("Building #{NAME}:#{VERSION}, #{NAME}:#{CI_LABEL} and #{NAME}:dev …")
   sh "docker build #{BUILD_ARGS} -t #{NAME}:dev -t #{NAME}:#{CI_LABEL} -t #{NAME}:#{VERSION} -f Dockerfile ."
 end
 
-desc 'Build and bring up all containers'
-task :compose_up do
-  print_msg('Bring up all containers')
-  sh 'cd test; docker-compose up --build  -d; sleep 20'
+desc 'Squash Colossal to one layer'
+task :squash do
+  # requires docker-squash https://github.com/goldmann/docker-squash
+  print_title("Squashing #{NAME}:#{VERSION} #{NAME}:dev #{NAME}:#{CI_LABEL}")
+  sh "docker-squash -t #{NAME}:#{VERSION} #{NAME}:#{VERSION}"
+  sh "docker tag #{NAME}:#{VERSION} #{NAME}:dev"
+  sh "@docker tag #{NAME}:#{VERSION} #{NAME}:#{CI_LABEL}"
 end
 
-desc 'Teardown container'
-task :compose_down do
-  print_msg('Teardown container')
+desc 'Build test cluster'
+task :'compose-build' do
+  abort("#{NAME}:dev is not yet built. Run 'rake build'") unless Docker::Image.exist?("#{NAME}:dev")
+
+  print_title('Building test cluster')
+  sh 'cd test; docker-compose build'
+end
+
+desc 'Sleep for a while'
+task :sleep do
+  print_title('Sleeping for a bit')
+  sh 'sleep 20'
+end
+
+desc 'Bring up test cluster'
+task :'compose-up' do
+  print_title('Bring up test cluster')
+  sh 'cd test; docker-compose up -d'
+end
+
+desc 'Teardown test cluster'
+task :'compose-down' do
+  print_title('Teardown container')
   sh 'cd test; docker-compose down'
+end
+
+task :clean => :'compose-down'
+
+desc 'Clean all traces'
+task :'clean-all' => :'compose-down' do
+  print_title('Removing images')
+  remove_image('test_app:latest', true)
+  remove_image('test_redis:latest', true)
+  remove_image('test_nginx:latest', true)
+  remove_image("#{NAME}:#{VERSION}", true)
+  remove_image("#{NAME}:dev", true)
+  remove_image("#{NAME}:latest", true)
+  remove_image("#{NAME}:pr", true)
+  remove_image('consul:latest', true)
+  dangling_images = `docker images -f "dangling=true" -q`
+  dangling_images.each_line do |image|
+    remove_image(image, false)
+  end
+end
+
+desc "Push #{NAME}:#{VERSION}"
+task :push do
+  print_title("Pushing #{NAME}:#{VERSION}")
+  sh "docker tag #{NAME}:dev #{NAME}:#{VERSION}"
+  sh "docker push #{NAME}:#{VERSION}"
+end
+
+desc "Push #{NAME}:#{VERSION}"
+task :'push-label' do
+  print_title("Pushing #{NAME}:#{CI_LABEL}")
+  sh "docker tag #{NAME}:dev #{NAME}:#{CI_LABEL}"
+  sh "docker push #{NAME}:#{CI_LABEL}"
+end
+
+desc "Link #{NAME}:#{VERSION} to #{NAME}:latest and push it"
+task :'push-label' do
+  print_title("Pushing #{NAME}:#{CI_LABEL}")
+  sh "docker tag #{NAME}:#{VERSION} #{NAME}:latest"
+  sh "docker push #{NAME}:latest"
 end
