@@ -3,9 +3,6 @@ set -e
 
 . "./ci/scripts/dockerStart.sh"
 
-echo "* Installing GNU make"
-apk add --update make
-
 echo "* pulling image ${DOCKER_TAG}"
 docker pull "quay.io/ahelal/colossal:${DOCKER_TAG}"
 
@@ -20,3 +17,6 @@ bundle install
 
 # Run the tests
 CI_LABEL=${DOCKER_TAG} bundle exec rake tests
+
+# be nice and do clean up
+CI_LABEL=${DOCKER_TAG} bundle exec rake clean-all
