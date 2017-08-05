@@ -89,6 +89,15 @@ end
 
 desc 'Build, bring up cluser, test, destroy'
 task :tests => %w[build compose-down compose-build compose-up sleep verify] do
+  # Lets destroy hooks
+  # container_id = container_running?("test_hooks")
+  # if container_id
+  #   container = Docker::Container.get(container_id)
+  #   container.exec(['/kill.sh'])
+  # end
+  # #puts container.logs(stdout: true)
+
+  # Destroy
   Rake::Task['compose-down'].execute
 end
 

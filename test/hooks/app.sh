@@ -1,6 +1,7 @@
 #!/bin/sh
+set -e
 
 echo COLOSSAL="${COLOSSAL}" >> /var/log/hooks.log
 
 # Start application
-/usr/bin/nc -l 3030
+tail -f /dev/null

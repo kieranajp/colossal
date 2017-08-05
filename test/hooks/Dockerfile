@@ -11,6 +11,7 @@ ENV  SERVICE_NAME_1  "containerpilot"
 ENV  SERVICE_PORT_1  "3000"
 
 ADD app.sh /app.sh
+ADD kill.sh /kill.sh
 ADD hook-test.sh /hook-test.sh
 ADD configENV.ctmpl /hooks/configENV.ctmpl
 
