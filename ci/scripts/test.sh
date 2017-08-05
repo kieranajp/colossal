@@ -16,4 +16,4 @@ bundle install
 CI_LABEL=${DOCKER_TAG} bundle exec rake tests
 
 # be nice and do clean up
-CI_LABEL=${DOCKER_TAG} bundle exec rake clean-all
+#CI_LABEL=${DOCKER_TAG} bundle exec rake clean-all
