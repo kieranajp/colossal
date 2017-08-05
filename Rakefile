@@ -2,7 +2,7 @@ require 'docker'
 require 'json'
 require 'rspec/core/rake_task'
 
-task default: %w[all]
+task default: %w[tests]
 
 PATH    = File.dirname(__FILE__)
 NAME    = 'quay.io/ahelal/colossal'.freeze
@@ -35,7 +35,6 @@ end
 def remove_image(name, force)
   return false unless Docker::Image.exist?(name)
   print_msg("Removing image #{name}")
-  Docker::Image.get(name)
   Docker::Image.remove(name, :force => force)
 end
 
@@ -50,7 +49,7 @@ end
 
 def run_test(name, path)
   container_id = container_running?(name)
-  raise "Container not running #{name}" unless container_id
+  abort("Container not running #{name}") unless container_id
   ENV['KITCHEN_CONTAINER_ID'] = container_id
   print_title("Running tests for #{name}")
   RSpec::Core::RakeTask.new(name) do |t|
@@ -64,22 +63,27 @@ end
 #
 
 desc 'Run test on app'
-task :'test-app' do
+task :'verify-app' do
   run_test('test_app', 'test/spec/app/*_spec.rb')
 end
 
 desc 'Run test on redis'
-task :'test-redis' do
+task :'verify-redis' do
   run_test('test_redis', 'test/spec/redis/*_spec.rb')
 end
 
 desc 'Run test on nginx'
-task :'test-nginx' do
+task :'verify-nginx' do
   run_test('test_nginx', 'test/spec/nginx/*_spec.rb')
 end
 
+desc 'Run test on hooks'
+task :'verify-hooks' do
+  run_test('test_hooks', 'test/spec/hooks/*_spec.rb')
+end
+
 desc 'Verify tests'
-task :verify => %w[test-redis test-app test-nginx] do
+task :verify => %w[verify-redis verify-app verify-nginx verify-hooks] do
   Rake::Task['compose-down'].execute
 end
 
@@ -106,7 +110,6 @@ end
 desc 'Build test cluster'
 task :'compose-build' do
   abort("#{NAME}:dev is not yet built. Run 'rake build'") unless Docker::Image.exist?("#{NAME}:dev")
-
   print_title('Building test cluster')
   sh 'cd test; docker-compose build'
 end
@@ -114,11 +117,12 @@ end
 desc 'Sleep for a while'
 task :sleep do
   print_title('Sleeping for a bit')
-  sh 'sleep 20'
+  sh 'sleep 15'
 end
 
 desc 'Bring up test cluster'
 task :'compose-up' do
+  abort("#{NAME}:dev is not yet built. Run 'rake build'") unless Docker::Image.exist?("#{NAME}:dev")
   print_title('Bring up test cluster')
   sh 'cd test; docker-compose up -d'
 end
@@ -137,6 +141,7 @@ task :'clean-all' => :'compose-down' do
   remove_image('test_app:latest', true)
   remove_image('test_redis:latest', true)
   remove_image('test_nginx:latest', true)
+  remove_image('test_hooks:latest', true)
   remove_image("#{NAME}:#{VERSION}", true)
   remove_image("#{NAME}:dev", true)
   remove_image("#{NAME}:latest", true)
@@ -144,7 +149,7 @@ task :'clean-all' => :'compose-down' do
   remove_image('consul:latest', true)
   dangling_images = `docker images -f "dangling=true" -q`
   dangling_images.each_line do |image|
-    remove_image(image, false)
+    remove_image(image.delete!("\n"), true)
   end
 end
 
