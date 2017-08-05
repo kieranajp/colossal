@@ -19,4 +19,4 @@ echo "* Running bundle install"
 bundle install
 
 # Run the tests
-make tests "CI_LABEL=${DOCKER_TAG}"
+bundle exec rspec tests "CI_LABEL=${DOCKER_TAG}"
