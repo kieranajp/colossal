@@ -1,0 +1,5 @@
+# Sample config env file
+MYPILOT_ENV_CONF=CONTAINERPILOT
+
+# Use ssm plugin
+MYPILOT_PASSWORD={{ plugin "ssm" "-test-mode" "TEST_PARAM_VALUE" }}

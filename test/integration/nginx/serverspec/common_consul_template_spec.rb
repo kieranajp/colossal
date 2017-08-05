@@ -1,1 +1,0 @@
-../../common-tests/common_consul_template_spec.rb

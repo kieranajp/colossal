@@ -1,0 +1,1 @@
+../common-tests/common_structure_spec.rb

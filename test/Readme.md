@@ -8,14 +8,19 @@ In order to test we spin up a Consul server first then spin _nginx_, _redis_  an
 
 ## Run
 
-On the root of source run
+You need ruby > 2.0 and bundler installed and on the root of source run.
 
-```
-make build
-make tests
+```sh
+# Install required gems
+bundle
+# build image and spin the cluster and run the tests and tear down the cluster
+bundle exec rake tests
+# minor clean up
+bundle exec rake clean
+# clean every thing including image
+bundle exec rake clean-all
 ```
 
-## details
-For more info dig into
-.kitchen.yml
-tests in integration
+## Details
+
+For more info dig into [rake](rake) [docker-compose](test/docker-compose.yml) and the [test dir](test)

@@ -1,1 +1,0 @@
-../../common-tests/common_containerpilot_spec.rb

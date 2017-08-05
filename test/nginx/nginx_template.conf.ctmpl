@@ -1,0 +1,12 @@
+server {
+        listen 8888 default_server;
+        listen [::]:8888 default_server;
+
+        location /status {
+            access_log off;
+            return 200 "healthy\n";
+        }
+        location / {
+            proxy_pass http://127.0.0.1:{{ env "SERVICE_PORT_1" }};
+        }
+}

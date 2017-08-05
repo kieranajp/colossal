@@ -1,1 +1,0 @@
-../../common-tests/common_scripts_spec.rb

@@ -1,5 +1,6 @@
-[![Docker Repository on Quay](https://quay.io/repository/ahelal/colossal/status "Docker Repository on Quay")](https://quay.io/repository/ahelal/colossal)
 # Colossal
+
+[![Docker Repository on Quay](https://quay.io/repository/ahelal/colossal/status "Docker Repository on Quay")](https://quay.io/repository/ahelal/colossal)
 
 A base image based on Alpine that utilizes the autopilot pattern with client side load balancing.
 
@@ -282,11 +283,4 @@ The group of variables that define application configuration.
 
 ## Running tests
 
-```bash
-# Build image
-make build
-# Run tests (and try to do clean up)
-make tests
-# Run tests (leave images in docker and don't do clean up)
-make tests-debug
-```
+Check [tests](test/)
