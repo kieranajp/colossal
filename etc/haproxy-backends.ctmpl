@@ -6,13 +6,13 @@
 # Active services
 {{ range service ( printf "%s" $ServiceName) }}
 echo " + Activating {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}}"
-echo "set server {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}} state ready" | socat stdio /var/lib/haproxy/stats.sock
+#echo "set server {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}} state ready" | socat stdio /var/lib/haproxy/stats.sock
 {{ end }}
 
 # Maintenance mode services find backend that will retire
 {{ range service ( printf "%s|maintenance" $ServiceName) }}
 echo " - Draining {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}}"
-echo "set server {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}} state drain" | socat stdio /var/lib/haproxy/stats.sock
+#echo "set server {{$ServiceName}}/{{.ID}}_{{.Address}}:{{.Port}} state drain" | socat stdio /var/lib/haproxy/stats.sock
 {{ end }}
 
 {{- end }}{{- end }}
