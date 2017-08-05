@@ -19,4 +19,4 @@ echo "* Running bundle install"
 bundle install
 
 # Run the tests
-bundle exec rspec tests "CI_LABEL=${DOCKER_TAG}"
+CI_LABEL=${DOCKER_TAG} bundle exec rake tests

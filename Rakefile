@@ -22,7 +22,7 @@ BUILD_ARGS = "--build-arg VERSION=#{VERSION}" \
 				     " --build-arg CONSUL_TEMPLATE_PLUGIN_SSM_VERSION=#{PACKAGES['CONSUL_TEMPLATE_PLUGIN_SSM_VERSION']}" \
 				     " --build-arg CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM=#{PACKAGES['CONSUL_TEMPLATE_PLUGIN_SSM_CHECKSUM']}".freeze
 ARROW = "\033[34;1m▶\033[0m".freeze
-CI_LABEL = 'pr'
+CI_LABEL = ENV['CI_LABEL'] || 'pr'
 
 def print_title(msg)
   puts '', "#{ARROW} #{msg} ..."
@@ -113,7 +113,7 @@ task :squash do
   print_title("Squashing #{NAME}:#{VERSION} #{NAME}:dev #{NAME}:#{CI_LABEL}")
   sh "docker-squash -t #{NAME}:#{VERSION} #{NAME}:#{VERSION}"
   sh "docker tag #{NAME}:#{VERSION} #{NAME}:dev"
-  sh "@docker tag #{NAME}:#{VERSION} #{NAME}:#{CI_LABEL}"
+  sh "docker tag #{NAME}:#{VERSION} #{NAME}:#{CI_LABEL}"
 end
 
 desc 'Build test cluster'
@@ -155,6 +155,7 @@ task :'clean-all' => :'compose-down' do
   remove_image("#{NAME}:dev", true)
   remove_image("#{NAME}:latest", true)
   remove_image("#{NAME}:pr", true)
+  remove_image("#{NAME}:#{CI_LABEL}", true)
   remove_image('consul:latest', true)
   dangling_images = `docker images -f "dangling=true" -q`
   dangling_images.each_line do |image|
