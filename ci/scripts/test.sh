@@ -9,9 +9,6 @@ docker pull "quay.io/ahelal/colossal:${DOCKER_TAG}"
 echo "* linking dev"
 docker tag "quay.io/ahelal/colossal:${DOCKER_TAG}" quay.io/ahelal/colossal:dev
 
-# Building Colossal docker image
-# cd "${source}" || echo "failed to cd into source. ${source}" || exit 1
-
 echo "* Running bundle install"
 bundle install
 
